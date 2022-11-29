@@ -3,5 +3,5 @@ const {add, fibonacci} = pkg;
 
 
 
-console.log(add(1+4))
+console.log(add(1,4))
 console.log(fibonacci(20))
