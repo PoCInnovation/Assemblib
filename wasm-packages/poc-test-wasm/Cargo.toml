@@ -1,6 +1,6 @@
 [package]
 name = "poc-test-wasm"
-version = "0.1.0"
+version = "0.3.1"
 authors = ["Toumi-Elyes <elyes.toumi@epitech.eu>"]
 edition = "2018"
 
@@ -12,6 +12,9 @@ default = ["console_error_panic_hook"]
 
 [dependencies]
 wasm-bindgen = "0.2.63"
+svg_definitions = "0.3.1"
+wasm_svg_graphics = "1.0.4"
+web-sys = "0.3.4"
 
 # The `console_error_panic_hook` crate provides better debugging of panics by
 # logging them with `console.error`. This is great for development, but requires
