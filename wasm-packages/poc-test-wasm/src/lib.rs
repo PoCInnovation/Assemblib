@@ -1,7 +1,9 @@
 // use std::convert::TryInto;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
-use web_sys::{HtmlElement};
+use web_sys::Element;
+use web_sys::{HtmlElement, Document};
+use std::collections::HashMap;
 
 
 
@@ -42,96 +44,30 @@ pub fn display_blue_square() -> Result<(), JsValue> {
     Ok(())
 }
 
-#[wasm_bindgen]
-pub fn donut_display(name: &str) -> Result<(), JsValue> {
+fn attributes_to_hashmap(attributes_str: &str) -> HashMap<String, &str> {
+    let split = attributes_str.split(";");
+    let mut attributes_map = HashMap::new();
 
-    let window = web_sys::window().expect("global window does not exists");
-    let document = window.document().expect("expecting a document on window");
-    let body = document.body().expect("document expect to have have a body");
+    let attributes_list: Vec<&str> = split.collect();
 
-    //Step 1
-    let figure = document.create_element("figure")?;
-    let div = document.create_element("div").unwrap().dyn_into::<web_sys::HtmlElement>().unwrap();
-    div.set_attribute("class","doughnut-main")?;
-    let svg = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "svg")?;
-    svg.set_attribute("width","300px")?;
-    svg.set_attribute("height","300px")?;
-    svg.set_attribute("viewBox","0 0 42 42")?;
-    let rect = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "rect")?;
-    rect.set_attribute("width","100%")?;
-    rect.set_attribute("height","100%")?;
-    rect.set_attribute("fill","white")?;
+    for content in attributes_list {
+        let key_value_list = content.split("=");
 
-    let hole = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "circle")?;
-    hole.set_attribute("class","hole")?;
-    hole.set_attribute("cx","21")?;
-    hole.set_attribute("cy","21")?;
-    hole.set_attribute("r","15.91549430918954")?;
-    hole.set_attribute("fill","#fff")?;
+        let key_value: Vec<&str> = key_value_list.collect();
 
-    let ring = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "circle")?;
-    ring.set_attribute("class","ring")?;
-    ring.set_attribute("cx","21")?;
-    ring.set_attribute("cy","21")?;
-    ring.set_attribute("r","15.91549430918954")?;
-    ring.set_attribute("fill","transparent")?;
-    ring.set_attribute("stroke","#d2d3d4")?;
-    ring.set_attribute("stroke-width","3")?;
+        attributes_map.insert(String::from(key_value[0]), key_value[1]);
+    }
+    return attributes_map;
+}
 
-    let seg1 = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "circle")?;
-    seg1.set_attribute("cx","21")?;
-    seg1.set_attribute("cy","21")?;
-    seg1.set_attribute("r","15.91549430918954")?;
-    seg1.set_attribute("fill","transparent")?;
-    seg1.set_attribute("stroke","#ce4b99")?;
-    seg1.set_attribute("stroke-width","5")?;
-    seg1.set_attribute("stroke-dasharray","40 60")?;
-    seg1.set_attribute("stroke-dashoffset","25")?;
+fn create_svg_element(document: &Document, elem_type: &str, attributes: HashMap<String, &str>) -> Element {
+    let element = document.create_element_ns(Some("http://www.w3.org/2000/svg"),elem_type).unwrap();
 
-    let seg2 = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "circle")?;
-    seg2.set_attribute("cx","21")?;
-    seg2.set_attribute("cy","21")?;
-    seg2.set_attribute("r","15.91549430918954")?;
-    seg2.set_attribute("fill","transparent")?;
-    seg2.set_attribute("stroke","#27A844")?;
-    seg2.set_attribute("stroke-width","5")?;
-    seg2.set_attribute("stroke-dasharray","20 80")?;
-    seg2.set_attribute("stroke-dashoffset","85")?;
+    for (key, value) in &attributes {
+        element.set_attribute(key, value).unwrap();
+    }
 
-    let seg3 = document.create_element_ns(Some("http://www.w3.org/2000/svg"),"circle")?;
-    seg3.set_attribute("cx","21")?;
-    seg3.set_attribute("cy","21")?;
-    seg3.set_attribute("r","15.91549430918954")?;
-    seg3.set_attribute("fill","transparent")?;
-    seg3.set_attribute("stroke","#377bbc")?;
-    seg3.set_attribute("stroke-width","5")?;
-    seg3.set_attribute("stroke-dasharray","40 60")?;
-    seg3.set_attribute("stroke-dashoffset","65")?;
-
-    let g = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "g")?;
-    g.set_attribute("class","doughnut-text")?;
-
-    let g_text = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "text")?;
-    g_text.set_attribute("x","5%")?;
-    g_text.set_attribute("y","5%")?;
-    g_text.set_attribute("class","doughnut-label")?;
-    g_text.set_text_content(Some(name));
-    g.append_child(&g_text)?;
-
-    svg.append_child(&rect).unwrap();
-    svg.append_child(&hole).unwrap();
-    svg.append_child(&ring).unwrap();
-
-    svg.append_child(&seg1).unwrap();
-    svg.append_child(&seg2).unwrap();
-    svg.append_child(&seg3).unwrap();
-
-    svg.append_child(&g).unwrap();
-    div.append_child(&svg).unwrap();
-    figure.append_child(&div).unwrap();
-    body.append_child(&figure).unwrap();
-
-    Ok(())
+    return element;
 }
 
 #[wasm_bindgen]
@@ -144,11 +80,7 @@ pub fn display_rocket() -> Result<(), JsValue> {
     let div = document.create_element("div").unwrap().dyn_into::<web_sys::HtmlElement>().unwrap();
     div.set_attribute("class","rocket-main")?;
 
-    let svg = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "svg")?;
-    svg.set_attribute("width","512px")?;
-    svg.set_attribute("height","512px")?;
-    svg.set_attribute("viewBox","0 0 416.449 416.449")?;
-    svg.set_attribute("id", "Layer_1")?;
+    let svg = create_svg_element(&document, "svg", attributes_to_hashmap("width=512px;height=512px;viewBox=0 0 416.449 416.449;id=Layer_1"));
 
     let base_g = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "svg")?;
     base_g.set_attribute("id","_x31_5._Rocket_2_")?;
@@ -161,6 +93,7 @@ pub fn display_rocket() -> Result<(), JsValue> {
     let g1a = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "g")?;
 
     let path1a = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "path")?;
+
     path1a.set_attribute("style", "fill:#FF7124;")?;
     path1a.set_attribute("d", "M399.76,16.699c10.12,37.84,8.67,78.13-4.34,115.28h-0.01L284.48,21.049v-0.01      C321.63,8.029,361.92,6.579,399.76,16.699z")?;
 

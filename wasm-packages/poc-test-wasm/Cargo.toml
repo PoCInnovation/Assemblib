@@ -1,6 +1,6 @@
 [package]
 name = "poc-test-wasm"
-version = "0.3.18"
+version = "0.3.19"
 authors = ["Toumi-Elyes <elyes.toumi@epitech.eu>"]
 edition = "2018"
 
