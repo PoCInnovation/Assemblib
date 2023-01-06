@@ -1,0 +1,1 @@
+cp -r wasm-packages/poc-test-wasm/pkg test-wasm/src/pkg
