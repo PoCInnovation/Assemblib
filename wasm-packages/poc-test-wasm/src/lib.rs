@@ -1,9 +1,10 @@
 // use std::convert::TryInto;
-use wasm_bindgen::prelude::*;
-use wasm_bindgen::JsCast;
+use std::f64;
 use web_sys::Element;
-use web_sys::{HtmlElement, Document};
+use wasm_bindgen::JsCast;
+use wasm_bindgen::prelude::*;
 use std::collections::HashMap;
+use web_sys::{HtmlElement, Document, HtmlCanvasElement};
 
 
 
@@ -315,3 +316,75 @@ pub fn display_rocket() -> Result<(), JsValue> {
     Ok(())
 }
 
+
+#[wasm_bindgen]
+pub fn start() -> Result<web_sys::CanvasRenderingContext2d, JsValue> {
+    let document = web_sys::window().unwrap().document().unwrap();
+    let canvas = document.get_element_by_id("canvas").unwrap();
+    let canvas: HtmlCanvasElement = canvas
+        .dyn_into::<web_sys::HtmlCanvasElement>()
+        .map_err(|_| ())
+        .unwrap();
+
+    let context = canvas
+        .get_context("2d")
+        .unwrap()
+        .unwrap()
+        .dyn_into::<web_sys::CanvasRenderingContext2d>()
+        .unwrap();
+
+    context.begin_path();
+
+    return Ok(context);
+}
+
+#[wasm_bindgen]
+pub fn draw_face(ctx: web_sys::CanvasRenderingContext2d) {
+    // Draw the outer circle.
+    ctx
+    .arc(75.0, 75.0, 50.0, 0.0, f64::consts::PI * 2.0)
+    .unwrap();
+
+    // Draw the mouth.
+    ctx.move_to(110.0, 75.0);
+    ctx.arc(75.0, 75.0, 35.0, 0.0, f64::consts::PI).unwrap();
+
+    // Draw the left eye.
+    ctx.move_to(65.0, 65.0);
+    ctx
+        .arc(60.0, 65.0, 5.0, 0.0, f64::consts::PI * 2.0)
+        .unwrap();
+
+    // Draw the right eye.
+    ctx.move_to(95.0, 65.0);
+    ctx
+        .arc(90.0, 65.0, 5.0, 0.0, f64::consts::PI * 2.0)
+        .unwrap();
+
+    ctx.stroke();
+}
+
+
+#[wasm_bindgen]
+pub fn draw_line(ctx: web_sys::CanvasRenderingContext2d, x: f64, y: f64) {
+    ctx.line_to(x, y);
+
+    ctx.stroke();
+}
+
+#[wasm_bindgen]
+pub fn draw_rect(ctx: web_sys::CanvasRenderingContext2d, x: f64, y: f64, w: f64, h: f64) {
+    ctx.rect(x, y, w, h);
+
+    ctx.stroke();
+}
+
+#[wasm_bindgen]
+pub fn draw_text(ctx: web_sys::CanvasRenderingContext2d, text: &str, x: f64, y: f64, w: f64) {
+    ctx.stroke_text_with_max_width(text, x, y, w);
+}
+
+#[wasm_bindgen]
+pub fn set_color(ctx: web_sys::CanvasRenderingContext2d, text: &str) {
+    ctx.set_shadow_color(text);
+}
