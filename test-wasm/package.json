@@ -12,7 +12,7 @@
     "@types/node": "^16.18.3",
     "@types/react": "^18.0.25",
     "@types/react-dom": "^18.0.9",
-    "poc-test-wasm": "^0.3.25",
+    "poc-test-wasm": "^0.3.27",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
