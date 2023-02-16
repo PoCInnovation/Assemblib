@@ -5,8 +5,6 @@ use wasm_bindgen::JsCast;
 use wasm_bindgen::prelude::*;
 use web_sys::{HtmlCanvasElement};
 
-
-
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
 #[cfg(feature = "wee_alloc")]
@@ -43,14 +41,23 @@ pub fn start(id: &str) -> Result<web_sys::CanvasRenderingContext2d, JsValue> {
 }
 
 #[wasm_bindgen]
+pub fn sleep(ms: i32) {
+    let closure = Closure::wrap(Box::new(move || {
+    }) as Box<dyn FnMut()>);
+    let cb = closure.as_ref().unchecked_ref();
+    let _promise = web_sys::window()
+        .unwrap()
+        .set_timeout_with_callback_and_timeout_and_arguments_0(cb, ms);
+    closure.forget();
+}
+
+#[wasm_bindgen]
 pub fn draw_line(ctx: web_sys::CanvasRenderingContext2d, x: f64, y: f64) {
     ctx.line_to(x, y);
 }
 
 #[wasm_bindgen]
-pub fn draw_rect(ctx: web_sys::CanvasRenderingContext2d, x: f64, y: f64, w: f64, h: f64, c: Option<String>) {
-    let _color: String = c.unwrap_or(String::from("black"));
-
+pub fn draw_rect(ctx: web_sys::CanvasRenderingContext2d, x: f64, y: f64, w: f64, h: f64) {
     ctx.rect(x, y, w, h);
 }
 
@@ -65,8 +72,8 @@ pub fn draw_text(ctx: web_sys::CanvasRenderingContext2d, text: &str, x: f64, y: 
 }
 
 #[wasm_bindgen]
-pub fn set_color(ctx: web_sys::CanvasRenderingContext2d, text: &str) {
-    ctx.set_shadow_color(text);
+pub fn set_color(ctx: web_sys::CanvasRenderingContext2d, color: &str) {
+    ctx.set_fill_style(&color.into());
 }
 
 #[wasm_bindgen]
@@ -116,5 +123,4 @@ pub fn stop_drawing(ctx: web_sys::CanvasRenderingContext2d) {
 
 // ! refacto code to add classe
 // TODO add color
-// TODO remove extra line
-// TODO check why circle get filled when its not supposed to do
+// TODO add animations

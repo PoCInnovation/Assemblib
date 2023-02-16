@@ -36,26 +36,15 @@ function App() {
   const drawtext = () => {
     wasm.start_drawing(canvaCtx);
     wasm.draw_text(canvaCtx, text, x, y, 500);
-    wasm.fill(canvaCtx);
     wasm.stop_drawing(canvaCtx);
   }
 
   const drawrect = () => {
     wasm.start_drawing(canvaCtx);
+    wasm.set_color(canvaCtx, "yellow");
     wasm.draw_rect(canvaCtx, x, y, 20, 30);
-    wasm.stroke(canvaCtx);
-  }
-
-  const setCyan = () => {
-    wasm.set_color(canvaCtx, "cyan");
-  }
-
-  const setRed = () => {
-    wasm.set_color(canvaCtx, "red");
-  }
-
-  const setGreen = () => {
-    wasm.set_color(canvaCtx, "green");
+    wasm.fill(canvaCtx);
+    wasm.stop_drawing(canvaCtx);
   }
 
   const clearCanva = () => {
@@ -65,10 +54,9 @@ function App() {
   const drawCircle = () => {
     wasm.start_drawing(canvaCtx);
     wasm.draw_circle(canvaCtx, x, y, 50);
+    wasm.stroke(canvaCtx);
     wasm.stop_drawing(canvaCtx);
-
   }
-
 
   const drawArc = () => {
     wasm.start_drawing(canvaCtx);
@@ -80,13 +68,26 @@ function App() {
   const drawBoxCircle = () => {
     wasm.start_drawing(canvaCtx);
     wasm.draw_circle(canvaCtx, x, y, 50);
+    wasm.fill(canvaCtx);
     wasm.stop_drawing(canvaCtx);
-    wasm.sleep_milliseconds(BigInt(500));
+    wasm.sleep(1000);
     wasm.start_drawing(canvaCtx);
     wasm.draw_rect(canvaCtx, x, y, 50, 60);
+    wasm.stroke(canvaCtx);
     wasm.stop_drawing(canvaCtx);
   }
 
+  const animatedCircle = () => {
+    for (let i = 0; i < 200; i += 1) {
+      clearCanva();
+      wasm.start_drawing(canvaCtx);
+      wasm.draw_circle(canvaCtx, x, y, 10);
+      wasm.stroke(canvaCtx);
+      wasm.stop_drawing(canvaCtx);
+      setX(x + 10);
+      console.log("tets");
+    }
+  }
 
   return (
     <Div className="App">
@@ -97,13 +98,11 @@ function App() {
           <input onChange={handleYPos} placeholder="y pos"/>
           <button onClick={drawtext}>text</button>
           <button onClick={drawrect}>rect</button>
-          <button onClick={setCyan}>cyan</button>
-          <button onClick={setRed}>red</button>
-          <button onClick={setGreen}>green</button>
           <button onClick={drawCircle}>circle</button>
           <button onClick={drawArc}>arc</button>
           <button onClick={clearCanva}>clear</button>
           <button onClick={drawBoxCircle}>boxCircle</button>
+          <button onClick={animatedCircle}>animated</button>
         </Div>
       </Wrapper>
       <Div>

@@ -1,6 +1,6 @@
 [package]
 name = "poc-test-wasm"
-version = "0.3.42"
+version = "0.3.47"
 authors = ["Toumi-Elyes <elyes.toumi@epitech.eu>"]
 edition = "2018"
 
@@ -38,6 +38,7 @@ features = [
   'Element',
   'HtmlCanvasElement',
   'Window',
+  'console'
 ]
 
 [profile.release]
